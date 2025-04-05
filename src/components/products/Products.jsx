@@ -1,21 +1,22 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {  getProducts } from "../../state-manager/productSlice";
+import { addToCart, getProducts } from "../../state-manager/productSlice";
 
 const Products = () => {
   const dispatch = useDispatch();
-  
-  const { products, isLoading } = useSelector((state) => state.product);
-console.log("this is products :", products);
-    console.log("this is loading : ", isLoading);
+
+  const { products, isLoading, cartLoading } = useSelector(
+    (state) => state.product
+  );
+  console.log("this is products :", products);
+  console.log("this is loading : ", isLoading);
 
   useEffect(() => {
     dispatch(getProducts());
   }, []);
 
   const handleAddToCart = (product) => {
-    console.log("Added to cart:", product);
-    // Dispatch an action to add the product to the cart (if cart functionality exists)
+    dispatch(addToCart(product._id));
   };
 
   if (isLoading) {
@@ -44,7 +45,7 @@ console.log("this is products :", products);
             onClick={() => handleAddToCart(product)}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
-            Add to Cart
+            {cartLoading ? "Loading..." : "Add to Cart"}
           </button>
         </div>
       ))}

@@ -5,9 +5,11 @@ import axios from "axios";
 const initialState = {
   products: [],
   isLoading: false,
+  cartLoading:false,
+
 };
 export const getProducts = createAsyncThunk(
-  "/productsaction/all",
+  "/products/all",
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get("http://localhost:4000/product/all", {
@@ -27,6 +29,24 @@ export const getProducts = createAsyncThunk(
     }
   }
 );
+export const addToCart = createAsyncThunk("/products/addToCart", async (productId, {rejectWithValue})=>{
+  try {
+    const response = await axios.post("http://localhost:4000/product/cart",{}, {
+      withCredentials: true,
+    });
+    toast.success("product added to your cart successfully");
+    
+    return response.data;
+  } catch (error) {
+    const err = error.response.data;
+    console.log("this is error :", error);
+    if (err && err.message) {
+      toast.error(err.message);
+      return rejectWithValue(err.message);
+    }
+    return rejectWithValue("something went wrong please try again later");
+  }
+})
 const productSlice = createSlice({
   name: "product",
   initialState,
@@ -44,6 +64,15 @@ const productSlice = createSlice({
     }).addCase(getProducts.rejected, (state)=>{
         state.isLoading= false;
         
+    }).addCase(addToCart.fulfilled,(state, action)=>{
+      state.cartLoading= false;
+      
+    }).addCase(addToCart.rejected,(state)=>{
+      state.cartLoading= false;
+
+    }).addCase(addToCart.pending,(state)=>{
+      state.cartLoading = true ;
+      
     })
   },
 });
