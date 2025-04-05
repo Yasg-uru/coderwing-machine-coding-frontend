@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, getProducts } from "../../state-manager/productSlice";
-import { removeCarts } from "../../state-manager/authSlice";
+import { checkAuth, removeCarts } from "../../state-manager/authSlice";
 
 const Products = () => {
   const dispatch = useDispatch();
@@ -18,12 +18,14 @@ const Products = () => {
   }, []);
   const handleRemoveFromCart = (productId) => {
     dispatch(removeCarts(productId)); // Dispatch action to remove item from cart
+    dispatch(checkAuth());
   };
   const handleAddToCart = (productId) => {
     if (!productId) {
       return;
     }
     dispatch(addToCart(productId));
+    dispatch(checkAuth());
   };
   const isAlreadyAddedToCart = (productId) => {
     if (user && user.carts && user.carts.length > 0) {
@@ -66,7 +68,7 @@ const Products = () => {
               onClick={() => handleAddToCart(product._id)}
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
-              {cartLoading ? "Loading..." : "Add to Cart"}
+Add To Cart
             </button>
           )}
         </div>

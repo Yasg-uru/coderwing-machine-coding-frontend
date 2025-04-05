@@ -4,7 +4,7 @@ import { removeCarts } from "../../state-manager/authSlice";
 
 const Cart = () => {
     const dispatch = useDispatch();
-    
+
   const { user, isLoading } = useSelector((state) => state.auth);
   const [cartItems, setCartItems] = useState([]);
   useEffect(() => {
@@ -15,6 +15,7 @@ const Cart = () => {
 
   const handleRemoveFromCart = (productId) => {
     dispatch(removeCarts(productId)); // Dispatch action to remove item from cart
+    dispatch(checkAuth());
   };
   if (isLoading) {
     return (
