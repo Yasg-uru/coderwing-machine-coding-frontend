@@ -31,7 +31,7 @@ export const getProducts = createAsyncThunk(
 );
 export const addToCart = createAsyncThunk("/products/addToCart", async (productId, {rejectWithValue})=>{
   try {
-    const response = await axios.post("http://localhost:4000/product/cart",{}, {
+    const response = await axios.post("http://localhost:4000/product/cart",{id:productId}, {
       withCredentials: true,
     });
     toast.success("product added to your cart successfully");

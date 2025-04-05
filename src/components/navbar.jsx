@@ -1,7 +1,10 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
+    const {user, isLoggedIn}= useSelector(state=>state.auth);
+
   return (
     <nav className="bg-gray-800 text-white">
       <div className="container mx-auto flex justify-between items-center p-4">
@@ -17,24 +20,19 @@ const Navbar = () => {
           </Link>
           
           <Link to="/cart" className="hover:text-gray-300">
-            View Cartc
+            View Cart
           </Link>
         </div>
 
         
         <div className="hidden md:flex space-x-4">
-          <Link
-            to="/login"
-            className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600"
-          >
-            Login
-          </Link>
-          <Link
+          
+          {!isLoggedIn && <Link
             to="/register"
             className="bg-green-500 px-4 py-2 rounded hover:bg-green-600"
           >
             Register
-          </Link>
+          </Link>}
         </div>
 
 

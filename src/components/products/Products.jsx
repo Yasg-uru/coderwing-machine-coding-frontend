@@ -16,6 +16,10 @@ const Products = () => {
   }, []);
 
   const handleAddToCart = (product) => {
+    if(!product) {
+      return ;
+      
+    }
     dispatch(addToCart(product._id));
   };
 

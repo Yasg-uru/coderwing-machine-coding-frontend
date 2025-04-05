@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RegisterUser } from "../state-manager/authSlice";
+import { Link } from "react-router-dom";
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
@@ -83,6 +84,7 @@ const SignupForm = () => {
         >
           {isLoading?"Loading...":"Sign Up"}
         </button>
+      <p className="text-green-500"> if you have already an account ? <Link className="font-bold " to="/login">Login</Link></p>
       </form>
     </div>
   );
