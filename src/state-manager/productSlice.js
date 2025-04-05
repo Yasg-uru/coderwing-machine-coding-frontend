@@ -1,18 +1,51 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosInstance } from "../helper/axiosInstance";
-const initialState= {
-    
-}
-const productSlice = createSlice({
-    name:"product",
-    initialState
-    ,
-    reducers:{},
-    extraReducers:(builder)=>{
+import toast from "react-hot-toast";
+import axios from "axios";
 
+const initialState = {
+  products: [],
+  isLoading: false,
+};
+export const getProducts = createAsyncThunk(
+  "/productsaction/all",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get("http://localhost:4000/product/all", {
+        withCredentials: true,
+      });
+      toast.success("produccts fetched successfully");
+      
+      return response.data;
+    } catch (error) {
+      const err = error.response.data;
+      console.log("this is error :", error);
+      if (err && err.message) {
+        toast.error(err.message);
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue("something went wrong please try again later");
     }
+  }
+);
+const productSlice = createSlice({
+  name: "product",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(getProducts.pending, (state)=>{
+        state.isLoading= true ;
 
-})
-;
+    }).addCase(getProducts.fulfilled, (state, action)=>{
+      console.log('this is products  inside slice:', action.payload)
+        state.products= action.payload.products;
+
+        state.isLoading= false;
+        
+    }).addCase(getProducts.rejected, (state)=>{
+        state.isLoading= false;
+        
+    })
+  },
+});
 export const {} = productSlice.actions;
 export default productSlice.reducer;
