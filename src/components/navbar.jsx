@@ -1,9 +1,12 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { logout } from "../state-manager/authSlice";
 
 const Navbar = () => {
     const {user, isLoggedIn}= useSelector(state=>state.auth);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
   return (
     <nav className="bg-gray-800 text-white">
@@ -27,7 +30,13 @@ const Navbar = () => {
         
         <div className="hidden md:flex space-x-4">
           
-          {!isLoggedIn && <Link
+          {isLoggedIn ?<p
+            onClick={()=>{dispatch(logout())
+                  navigate('/login')}}
+            className="bg-green-500 px-4 py-2 rounded hover:bg-green-600"
+          >
+            logout
+          </p>: <Link
             to="/register"
             className="bg-green-500 px-4 py-2 rounded hover:bg-green-600"
           >

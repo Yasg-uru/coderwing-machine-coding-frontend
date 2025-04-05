@@ -97,6 +97,27 @@ export const removeCarts = createAsyncThunk(
     }
   }
 );
+export const logout = createAsyncThunk("/auth/logout", async () => {
+  try {
+    const response = await axios.post(
+      `http://localhost:4000/user/logout`,
+      {
+        withCredentials: true,
+      }
+    );
+    toast.success("logged out successfully ");
+
+    return response.data;
+  } catch (error) {
+    const err = error.response.data;
+    console.log("this is error :", error);
+    if (err && err.message) {
+      toast.error(err.message);
+      return rejectWithValue(err.message);
+    }
+    return rejectWithValue("something went wrong please try again later");
+  }
+});
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -144,7 +165,11 @@ const authSlice = createSlice({
       })
       .addCase(removeCarts.fulfilled, (state, action) => {
         state.user = action.payload?.user;
-      });
+      }).addCase(logout.fulfilled, (state)=>{
+        state.isLoading = false;
+        state.isLoggedIn = false;
+        state.user = null;
+      })
   },
 });
 export const {} = authSlice.actions;
