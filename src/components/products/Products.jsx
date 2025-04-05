@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, getProducts } from "../../state-manager/productSlice";
+import { removeCarts } from "../../state-manager/authSlice";
 
 const Products = () => {
   const dispatch = useDispatch();
@@ -8,19 +9,27 @@ const Products = () => {
   const { products, isLoading, cartLoading } = useSelector(
     (state) => state.product
   );
+  const { user } = useSelector((state) => state.auth);
   console.log("this is products :", products);
   console.log("this is loading : ", isLoading);
 
   useEffect(() => {
     dispatch(getProducts());
   }, []);
-
-  const handleAddToCart = (product) => {
-    if(!product) {
-      return ;
-      
+  const handleRemoveFromCart = (productId) => {
+    dispatch(removeCarts(productId)); // Dispatch action to remove item from cart
+  };
+  const handleAddToCart = (productId) => {
+    if (!productId) {
+      return;
     }
-    dispatch(addToCart(product._id));
+    dispatch(addToCart(productId));
+  };
+  const isAlreadyAddedToCart = (productId) => {
+    if (user && user.carts && user.carts.length > 0) {
+      return user.carts.some((cartItem) => cartItem._id === productId);
+    }
+    return false;
   };
 
   if (isLoading) {
@@ -45,12 +54,21 @@ const Products = () => {
           />
           <h3 className="text-lg font-semibold mb-2">{product.productName}</h3>
           <p className="text-gray-600 mb-4">${product.price}</p>
-          <button
-            onClick={() => handleAddToCart(product)}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            {cartLoading ? "Loading..." : "Add to Cart"}
-          </button>
+          {isAlreadyAddedToCart(product._id) ? (
+            <button
+              onClick={() => handleRemoveFromCart(product._id)}
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            >
+              Remove
+            </button>
+          ) : (
+            <button
+              onClick={() => handleAddToCart(product._id)}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              {cartLoading ? "Loading..." : "Add to Cart"}
+            </button>
+          )}
         </div>
       ))}
     </div>

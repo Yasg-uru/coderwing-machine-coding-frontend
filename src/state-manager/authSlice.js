@@ -8,24 +8,23 @@ const initialState = {
   isLoggedIn: false,
   isLoading: false,
 };
-export const checkAuth = createAsyncThunk("/auth/check", async ()=>{
+export const checkAuth = createAsyncThunk("/auth/check", async () => {
   try {
     const response = await axios.get("http://localhost:4000/user/check-auth", {
-      withCredentials:true 
+      withCredentials: true,
     });
-    toast.success("auth checked successfully ")
+    toast.success("auth checked successfully ");
     return response.data;
-
   } catch (error) {
-     const err = error.response.data;
-      console.log("this is error :", error);
-      if (err && err.message) {
-        toast.error(err.message);
-        return rejectWithValue(err.message);
-      }
-      return rejectWithValue("something went wrong please try again later");
+    const err = error.response.data;
+    console.log("this is error :", error);
+    if (err && err.message) {
+      toast.error(err.message);
+      return rejectWithValue(err.message);
+    }
+    return rejectWithValue("something went wrong please try again later");
   }
-})
+});
 export const RegisterUser = createAsyncThunk(
   "/auth/register",
   async (userData, { rejectWithValue }) => {
@@ -74,6 +73,30 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+export const removeCarts = createAsyncThunk(
+  "/auth/remove_cart",
+  async (productId, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:4000/product/delete/${productId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      toast.success("product removed successfully from your carts ");
+
+      return response.data;
+    } catch (error) {
+      const err = error.response.data;
+      console.log("this is error :", error);
+      if (err && err.message) {
+        toast.error(err.message);
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue("something went wrong please try again later");
+    }
+  }
+);
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -105,21 +128,23 @@ const authSlice = createSlice({
         state.user = null;
         state.isLoggedIn = false;
         state.isLoading = false;
-      }).addCase(checkAuth.fulfilled, (state, action)=>{
-        state.user= action.payload.user;
-        state.isLoggedIn= true ;
-        state.isLoading= false;
-        
-      }).addCase(checkAuth.pending,(state)=>{
-        state.isLoading= true;
-        
-
-      }).addCase(checkAuth.rejected, (state)=>{
-        state.isLoading= false;
-        state.isLoggedIn = false ;
-        state.user= null;
-
       })
+      .addCase(checkAuth.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+        state.isLoggedIn = true;
+        state.isLoading = false;
+      })
+      .addCase(checkAuth.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(checkAuth.rejected, (state) => {
+        state.isLoading = false;
+        state.isLoggedIn = false;
+        state.user = null;
+      })
+      .addCase(removeCarts.fulfilled, (state, action) => {
+        state.user = action.payload?.user;
+      });
   },
 });
 export const {} = authSlice.actions;

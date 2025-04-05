@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { removeCarts } from "../../state-manager/authSlice";
 
 const Cart = () => {
-  const { user } = useSelector((state) => state.auth);
+    const dispatch = useDispatch();
+    
+  const { user, isLoading } = useSelector((state) => state.auth);
   const [cartItems, setCartItems] = useState([]);
   useEffect(() => {
     if (user && user.carts && user.carts.length>0) {
@@ -11,9 +14,15 @@ const Cart = () => {
   }, [user]);
 
   const handleRemoveFromCart = (productId) => {
-    // dispatch(removeFromCart(productId)); // Dispatch action to remove item from cart
+    dispatch(removeCarts(productId)); // Dispatch action to remove item from cart
   };
-
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
   
   return (
     <div className="container mx-auto p-6">
