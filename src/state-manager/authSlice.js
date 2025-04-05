@@ -8,6 +8,24 @@ const initialState = {
   isLoggedIn: false,
   isLoading: false,
 };
+export const checkAuth = createAsyncThunk("/auth/check", async ()=>{
+  try {
+    const response = await axios.get("http://localhost:4000/user/check-auth", {
+      withCredentials:true 
+    });
+    toast.success("auth checked successfully ")
+    return response.data;
+
+  } catch (error) {
+     const err = error.response.data;
+      console.log("this is error :", error);
+      if (err && err.message) {
+        toast.error(err.message);
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue("something went wrong please try again later");
+  }
+})
 export const RegisterUser = createAsyncThunk(
   "/auth/register",
   async (userData, { rejectWithValue }) => {
@@ -87,7 +105,21 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.user = null;
         state.isLoggedIn = false;
-      });
+      }).addCase(checkAuth.fulfilled, (state, action)=>{
+        state.isLoading= false;
+        state.user= action.payload.user;
+        state.isLoggedIn= true ;
+        
+      }).addCase(checkAuth.pending,(state)=>{
+        state.isLoading= true;
+        
+
+      }).addCase(checkAuth.rejected, (state)=>{
+        state.isLoading= false;
+        state.isLoggedIn = false ;
+        state.user= null;
+
+      })
   },
 });
 export const {} = authSlice.actions;
